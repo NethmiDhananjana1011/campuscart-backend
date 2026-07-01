@@ -1,18 +1,29 @@
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
+require('dotenv').config();
 
+// Safely resolve version differences for multer-storage-cloudinary package export strategy
+const multerStorageCloudinary = require('multer-storage-cloudinary');
+
+// If version 4+ uses destructuring, fallback uses default or direct assignment matrix
+const CloudinaryStorage = multerStorageCloudinary.CloudinaryStorage || 
+                          (multerStorageCloudinary.default ? multerStorageCloudinary.default.CloudinaryStorage : null) || 
+                          multerStorageCloudinary;
+
+// Configure Cloudinary credentials safely
 cloudinary.config({
-  cloud_name: 'djyky3svp', 
-  api_key: '489234116552563',
-  api_secret: 'Z1j4CyzOxAa-8-Aeud2gXooh1GI'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Instantiate storage system safely using validated dynamic constructor mapping
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'campuscart_products',
-    allowed_formats: ['jpg', 'png', 'jpeg']
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+    transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
   },
 });
 
