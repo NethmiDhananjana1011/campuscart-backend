@@ -1,23 +1,19 @@
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('cloudinary');
+const multerCloudinary = require('multer-storage-cloudinary');
 const multer = require('multer');
 require('dotenv').config();
 
-// Safely resolve version differences for multer-storage-cloudinary package export strategy
-const multerStorageCloudinary = require('multer-storage-cloudinary');
+// පැකේජ් එකේ version එක මොකක් වුණත් Constructor එක නිවැරදිව ගලවා ගන්නා ආකාරය (Safe check fallback matrix)
+const CloudinaryStorage = multerCloudinary.CloudinaryStorage || multerCloudinary;
 
-// If version 4+ uses destructuring, fallback uses default or direct assignment matrix
-const CloudinaryStorage = multerStorageCloudinary.CloudinaryStorage || 
-                          (multerStorageCloudinary.default ? multerStorageCloudinary.default.CloudinaryStorage : null) || 
-                          multerStorageCloudinary;
-
-// Configure Cloudinary credentials safely
+// Cloudinary Configuration Matrix
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Instantiate storage system safely using validated dynamic constructor mapping
+// Storage Object Engine Assignment Mapping
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {

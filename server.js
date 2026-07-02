@@ -9,6 +9,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api/orders', require('./routes/orderRoutes'));
+
+const orderRoutes = require('./routes/orderRoutes');
+app.use('/api/orders', orderRoutes);
+
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
